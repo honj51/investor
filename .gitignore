@@ -1,0 +1,8 @@
+#virtualenv files
+bin/
+include/
+lib/
+
+.Python
+.pyc
+
