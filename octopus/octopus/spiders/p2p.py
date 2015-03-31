@@ -247,8 +247,8 @@ class Sidatz(scrapy.Spider):
                 continue
             item = Item(
                 name = i.xpath('td[1]/a/text()').extract()[0].strip(),
-                apr = i.xpath('td[4]/text()').extract()[0].strip(),
-                day = i.xpath('td[5]/b/text()').extract()[0].strip(),
+                day = i.xpath('td[4]/text()').extract()[0].strip(),
+                apr = i.xpath('td[5]/b/text()').extract()[0].strip(),
                 progress = i.xpath('string(td[6]/span)').extract()[0].strip(),
                 platform = self.name
             )
