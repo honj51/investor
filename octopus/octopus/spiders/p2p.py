@@ -1,30 +1,36 @@
 # -*- coding: utf-8 -*-
 import scrapy
 import json
+import redis
 
 from octopus.items import Item
 
+r = redis.StrictRedis(host='localhost')
+
 def out(item):
-        print '---------%s------' % item['platform']
-        print u'标题: %s' % item['name']
-        print u'年利率: %s' % item['apr']
-        print u'期限: %s' % item['day']
-        print u'进度: %s' % item['progress']
-        print 
+        data = {'platform': item['platform'], 'name': item['name'], 'apr': item['apr'], 'day': item['day'], 'progress': item['progress']}
+        # print json.dumps(data)
+        r.lpush('application_data', json.dumps(data))
+        # print u'---------%s------' % item['platform']
+        # print u'标题: %s' % item['name']
+        # print u'年利率: %s' % item['apr']
+        # print u'期限: %s' % item['day']
+        # print u'进度: %s' % item['progress']
+        # print 
 
 """
-1、温商贷
-2、温州贷
-3、紫枫信贷
-4、招商贷
-5、爱投资
-6、诺诺磅客
+1、wsloan 温商贷
+2、wzdai 温州贷
+3、zfxindai 紫枫信贷
+4、zhaoshangdai 招商贷
+5、itouzi 爱投资
+6、nobank 诺诺磅客
 7、翼龙贷 (Pause)
-8、四达投资
-9、中宝贷
-10、资本在线
-11、一起好
-12、渝都贷
+8、sidatz 四达投资
+9、zhongbaodai 中宝财富
+10、zibenzaixian 资本在线
+11、yiqihao 一起好
+12、yududai 渝都贷
 13、
 """
 
@@ -38,6 +44,7 @@ class Wsloan(scrapy.Spider):
 
     def parse(self, res):
         #转贷宝
+        r.hset('platforms', self.name, 1)
         node1 = res.xpath('/html/body/div[9]/div/div[2]/div[2]/div/ul') 
         for i in node1:
             item = Item(
@@ -45,8 +52,9 @@ class Wsloan(scrapy.Spider):
                 apr = i.xpath('li[2]/span/text()').extract()[0].strip(),
                 day = i.xpath('string(li[4])').extract()[0].strip(),
                 progress = i.xpath('li[5]/font/text()').extract()[0].strip(),
-                platform = self.c_name
+                platform = self.name
             )
+            r.hincrby('platforms', self.name)
             out(item)
 
         #温商宝
@@ -57,8 +65,9 @@ class Wsloan(scrapy.Spider):
                 apr = i.xpath('li[2]/span/text()').extract()[0].strip(),
                 day = i.xpath('string(li[4])').extract()[0].strip(),
                 progress = i.xpath('li[5]/font/text()').extract()[0].strip(),
-                platform = self.c_name
+                platform = self.name
             )
+            r.hincrby('platforms', self.name)
             out(item)
 
 class Wzdai(scrapy.Spider):
@@ -69,6 +78,7 @@ class Wzdai(scrapy.Spider):
 
     def parse(self, res):
         #短期宝
+        r.hset('platforms', self.name, 1)
         node1 = res.xpath('/html/body/div[4]/div/div[1]/div[1]/ul')
         for i in node1:
             item = Item(
@@ -76,8 +86,9 @@ class Wzdai(scrapy.Spider):
                 apr = i.xpath('string(li/span[3]/font)').extract()[0].strip(),
                 day = i.xpath('string(li/span[2]/font)').extract()[0].strip(),
                 progress = i.xpath('string(li/span[4]/div/font)').extract()[0].strip(),
-                platform = self.c_name
+                platform = self.name
             )
+            r.hincrby('platforms', self.name)
             out(item)
 
         #股盈宝专区
@@ -88,8 +99,9 @@ class Wzdai(scrapy.Spider):
                 apr = i.xpath('string(li/span[3]/font)').extract()[0].strip(),
                 day = i.xpath('string(li/span[2]/font)').extract()[0].strip(),
                 progress = i.xpath('string(li/span[4]/div/font)').extract()[0].strip(),
-                platform = self.c_name
+                platform = self.name
             )
+            r.hincrby('platforms', self.name)
             out(item)
 
         #车宝宝
@@ -100,8 +112,9 @@ class Wzdai(scrapy.Spider):
                 apr = i.xpath('string(li/span[3]/font)').extract()[0].strip(),
                 day = i.xpath('string(li/span[2]/font)').extract()[0].strip(),
                 progress = i.xpath('string(li/span[4]/div/font)').extract()[0].strip(),
-                platform = self.c_name
+                platform = self.name
             )
+            r.hincrby('platforms', self.name)
             out(item)
 
         #借款标列表
@@ -112,8 +125,9 @@ class Wzdai(scrapy.Spider):
                 apr = i.xpath('string(li/span[3]/font)').extract()[0].strip(),
                 day = i.xpath('string(li/span[2]/font)').extract()[0].strip(),
                 progress = i.xpath('string(li/span[4]/div/font)').extract()[0].strip(),
-                platform = self.c_name
+                platform = self.name
             )
+            r.hincrby('platforms', self.name)
             out(item)
 
 class Zfxindai(scrapy.Spider):
@@ -124,6 +138,7 @@ class Zfxindai(scrapy.Spider):
     start_urls = ('http://www.zfxindai.cn', )
 
     def parse(self, res):
+        r.hset('platforms', self.name, 1)
         node = res.xpath('/html/body/div[6]/div[2]/div[1]/div[1]/div[2]/div[2]/div[3]/ul/li')
         menu = 1
         for i in node:
@@ -135,9 +150,10 @@ class Zfxindai(scrapy.Spider):
                 apr = i.xpath('string(span[3])').extract()[0].strip(),
                 day = i.xpath('string(span[4])').extract()[0].strip(),
                 progress = i.xpath('span[5]/span[2]/text()').extract()[0].strip(),
-                platform = self.c_name
+                platform = self.name
             )
 
+            r.hincrby('platforms', self.name)
             out(item)
 
 class Zhaoshangdai(scrapy.Spider):
@@ -148,6 +164,7 @@ class Zhaoshangdai(scrapy.Spider):
     start_urls = ('http://www.zhaoshangdai.com/', )
 
     def parse(self, res):
+        r.hset('platforms', self.name, 1)
         node = res.xpath('/html/body/div[3]/div[1]/div[1]/div[1]/div[2]/div')
         menu = 1
         for i in node:
@@ -159,9 +176,10 @@ class Zhaoshangdai(scrapy.Spider):
                 apr = i.xpath('ul/li[4]/text()').extract()[0].strip(),
                 day = i.xpath('string(ul/li[5])').extract()[0].strip(),
                 progress = i.xpath('ul/li[7]/div[3]/text()').extract()[0].strip(),
-                platform = self.c_name
+                platform = self.name
             )
 
+            r.hincrby('platforms', self.name)
             out(item)
 
 class Itouzi(scrapy.Spider):
@@ -173,6 +191,7 @@ class Itouzi(scrapy.Spider):
     start_urls = ('http://www.itouzi.com/dinvest/ajax/list?type=2', )
 
     def parse(self, res):
+        r.hset('platforms', self.name, 1)
         node = json.loads(res.body)
         for i in node['data']['borrows']:
             item = Item(
@@ -180,8 +199,9 @@ class Itouzi(scrapy.Spider):
                 apr = i['apr'],
                 day = i['timeLimit'],
                 progress = i['scale'],
-                platform = self.c_name
+                platform = self.name
             )
+            r.hincrby('platforms', self.name)
             out(item)
 
 class Nonobank(scrapy.Spider):
@@ -196,6 +216,7 @@ class Nonobank(scrapy.Spider):
         return scrapy.Request(url='https://www.nonobank.com/Licai/GetLicaiList/8/1/', method='POST', callback=self.deal_list)
 
     def deal_list(self, res):
+        r.hset('platforms', self.name, 1)
         node = json.loads(res.body)
         for i in node['members']:
             item = Item(
@@ -203,31 +224,11 @@ class Nonobank(scrapy.Spider):
                 apr = '%s ~ %s' % (i['fp_rate_min'], i['fp_rate_max']) ,
                 day = i['fp_expect'],
                 progress = i['fp_percent'],
-                platform = self.c_name
+                platform = self.name
             )
+            r.hincrby('platforms', self.name)
             out(item)
 
-class Eloancn(scrapy.Spider):
-    """ 爬虫暂停， 因为自动投标导致没有机会购买标 """
-    c_name = u'翼龙贷'
-    name = 'eloancn'
-
-    start_urls = ('http://www.eloancn.com/new/loadAllTender.action', )
-
-    def parse(self, res):
-        #转贷宝
-        node = res.xpath('/html/body/div[7]/div[2]/div[4]/dl')
-        sign = 0
-        for i in node:
-            item = Item(
-                name = i.xpath('dd[%s]/h3/a/text()' % str(sign + 1)).extract()[0].strip(),
-                apr = i.xpath('dd[%s]/p[2]/span/text()' % str(sign + 2)).extract()[0].strip(),
-                day = i.xpath('string(dd[%s]/p[1]/span)' % str(sign + 3)).extract()[0].strip(),
-                progress = i.xpath('dd[%s]/p/span/em/text()' % str(sign + 4)).extract()[0].strip(),
-                platform = self.c_name
-            )
-            sign += 5
-            out(item)
 
 class Sidatz(scrapy.Spider):
     c_name = u'四达投资'
@@ -237,6 +238,7 @@ class Sidatz(scrapy.Spider):
 
     def parse(self, res):
         #转贷宝
+        r.hset('platforms', self.name, 1)
         node = res.xpath('//*[@id="aspnetForm"]/section/div[6]/table[2]/tr')
         menu = 0
         for i in node:
@@ -248,8 +250,9 @@ class Sidatz(scrapy.Spider):
                 apr = i.xpath('td[4]/text()').extract()[0].strip(),
                 day = i.xpath('td[5]/b/text()').extract()[0].strip(),
                 progress = i.xpath('string(td[6]/span)').extract()[0].strip(),
-                platform = self.c_name
+                platform = self.name
             )
+            r.hincrby('platforms', self.name)
             out(item)
 
 class Zhongbaodai(scrapy.Spider):
@@ -259,6 +262,7 @@ class Zhongbaodai(scrapy.Spider):
     start_urls = ('http://www.zhongbaodai.com/#!/invest', )
 
     def parse(self, res):
+        r.hset('platforms', self.name, 1)
         return scrapy.Request(url='http://www.zhongbaodai.com/service/lending/public_project?limit=10&sort=status+asc%7Cid+desc',  method='GET', callback=self.deal_list)
 
     def deal_list(self, res):
@@ -269,9 +273,10 @@ class Zhongbaodai(scrapy.Spider):
                 apr = '%s%%' % (float(i['rate']) * 12) ,
                 day = u'%s个月' % i['periods'] ,
                 progress = float(i['progress']) * 100,
-                platform = self.c_name
+                platform = self.name
             )
 
+            r.hincrby('platforms', self.name)
             out(item)
         
 class Zibenzaixian(scrapy.Spider):
@@ -281,6 +286,7 @@ class Zibenzaixian(scrapy.Spider):
     start_urls = ('http://www.zibenzaixian.com/jd/want_invest/forwardInvest/borrowing.jd', )
 
     def parse(self, res):
+        r.hset('platforms', self.name, 1)
         node = res.xpath('//*[@id="Tab3"]/div/div[1]/table/tbody')
         for i in node:
             item = Item(
@@ -288,8 +294,9 @@ class Zibenzaixian(scrapy.Spider):
                 apr = i.xpath('tr/td[4]/text()').extract()[0].strip(),
                 day = i.xpath('tr/td[6]/text()').extract()[0].strip(),
                 progress = i.xpath('tr/td[7]/span/i[1]/text()').extract()[0].strip(),
-                platform = self.c_name
+                platform = self.name
             )
+            r.hincrby('platforms', self.name)
             out(item)
 
 class Yiqihao(scrapy.Spider):
@@ -302,6 +309,7 @@ class Yiqihao(scrapy.Spider):
         return scrapy.Request('https://www.yiqihao.com/loan/list', method='POST', callback=self.deal_list)
 
     def deal_list(self, res):
+        r.hset('platforms', self.name, 1)
         node = json.loads(res.body)
         for i in node['data']['list']:
             item = Item(
@@ -309,8 +317,9 @@ class Yiqihao(scrapy.Spider):
                 apr = i['apr'],
                 day = '%s%s' % (i['deadline'], i['deadline_type']),
                 progress = '%s%%' % ( (float(i['remain_amount']) / float(i['amount'])) * 100 ),
-                platform = self.c_name
+                platform = self.name
             )
+            r.hincrby('platforms', self.name)
             out(item)
 
 class Yududai(scrapy.Spider):
@@ -321,6 +330,7 @@ class Yududai(scrapy.Spider):
 
 
     def parse(self, res):
+        r.hset('platforms', self.name, 1)
         node = res.xpath('//div[re:test(@class, "invest-box-list")]')
 
         for i in node:
@@ -329,16 +339,7 @@ class Yududai(scrapy.Spider):
                 apr = i.xpath('ul/li/span[3]/text()').extract()[0].strip(),
                 day = u'%s个月' % (i.xpath('string(ul/li/span[4]/strong)').extract()[0]),
                 progress = i.xpath('ul/li/span[6]/b/text()').extract()[0].strip(),
-                platform = self.c_name
+                platform = self.name
             )
+            r.hincrby('platforms', self.name)
             out(item)
-
-
-
-class Gongshidai(scrapy.Spider):
-    name = 'gongshidai'
-
-    start_urls = ('http://192.168.1.167:81', )
-
-    def parse(self, res):
-        print res.body

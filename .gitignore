@@ -3,6 +3,7 @@ bin/
 include/
 lib/
 node_modules/
+bower_components/
 
 
 pip-selfcheck.json
