@@ -1,21 +1,21 @@
-# Investor 系统
+# Investor 
+还在开发中,会有更多的功能加入!
+
 ## 目前的功能
-----
 
 - 爬取网贷系统 （Octopus）
 - 实时显示数据  （eagle）
 
 ## 依赖
----
 
-- python 2.7+
-- scrapy >= 0.24.4
-- redis-py >= 2.10.3
-- socket.io 
-- node_redis
-- express
-- angularjs 1.3.15
-- bootstrap 3
+- Python 2.7+
+- Scrapy  0.24.4
+- redis-py  2.10.3
+- socket.io 1.3.5
+- node_redis 0.12.1
+- Express  4.12.3
+- Angularjs 1.3.15
+- Bootstrap 3
 
 ## 安装
 
