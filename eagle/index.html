@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html lang="zh-CN" ng-app='eagle'>
 <head>
-    <title></title>
+    <title>Eagle</title>
     <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="/static/css/main.css" rel="stylesheet">
     
 </head>
 <body>
     
-    <div class="container-fluid">
+    <div class="container-fluid" ng-controller="platforms">
         <div class="row">
-            <div class="col-md-3 sidebar" ng-controller="platforms">
+            <div class="col-md-3 sidebar">
                 <ul class="nav nav-sidebar">
-
-                    <li class="active"><a>所有</a></li>
-                    <li ng-repeat="(key, value) in item"><a><span ng-bind="key"></span></a></li>
+                    <li class="active"><a>所有<span class="badge pull-right" ng-bind="data.application_data.length"></span></a></li>
+                    <li ng-repeat="(key, value) in data.item">
+                        <div nav-Content></div>
+                    </li>
                 </ul>
             </div>
 
@@ -31,29 +32,20 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>温州贷</td>
-                            <td>车宝宝借款项目032期</td>
-                            <td>12%</td>
-                            <td>1个月</td>
-                            <td>100%</td>
+                        <tr ng-repeat="i in data.application_data">
+                            <td ng-bind="platform[i['platform']]"></td>
+                            <td ng-bind="i['name']"></td>
+                            <td ng-bind="i['apr']"></td>
+                            <td ng-bind="i['day']"></td>
+                            <td ng-bind="i['progress']"></td>
                         </tr>
-                        <tr>
-                            <td>温州贷2</td>
-                            <td>车宝宝借款项目032期</td>
-                            <td>12%</td>
-                            <td>1个月</td>
-                            <td>100%</td>
-                        </tr>
-                        <tr>
-                            <td>温州贷3</td>
-                            <td>车宝宝借款项目032期</td>
-                            <td>12%</td>
-                            <td>1个月</td>
-                            <td>100%</td>
-                        </tr>
+
                     </tbody>
                 </table>
+            </div>
+            <div class="col-md-3 fixed-bottom">
+                <div class="alert alert-success alert-dismissible" ng-show="data.is_refresh">正在刷新,请稍后...</div>
+                <button class="btn btn-primary btn-block " ng-click="refresh()">刷新</button>
             </div>
         </div>
     </div>
@@ -63,11 +55,5 @@
     <script src="angularjs/angular.min.js"></script>
     <script src="static/js/socket.io-1.3.4.js"></script>
     <script src="static/js/eagle.js"></script>
-    <script>
-        // var socket = io('http://localhost:8870')
-        // socket.on('zhou', function(data) {
-        //     console.log(data)
-        // })
-    </script>
 </body>
 </html>

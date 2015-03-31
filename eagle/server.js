@@ -4,7 +4,10 @@ var express = require('express'),
     app = express(),
     server = require('http').Server(app),
     io = require('socket.io')(server),
-    redis = require('redis').createClient()
+    redis = require('redis').createClient(),
+    exec = require('child_process').exec
+
+
 
 server.listen(8870)
 
@@ -23,18 +26,21 @@ io.on('connection', function(socket) {
     
     redis.on('pmessage', function(pattern, channel, message) {
         if(pattern == 'platforms') {
-            // console.log('---Got platforms data:' + message)
             socket.emit('platforms', message)
-            console.log(channel)
-            console.log(message)
-            console.log('-----over ')
         }
         if(pattern == 'application_data') {
-            console.log('---Got application_data data:' + message)
-            // socket.emit('application_data', message)
+            socket.emit('application_data', message)
         }
     })
 
+    socket.on('task', function(data) {
+        if (data == 'start') {
+            exec("cd " +  __dirname  + " && cd .. && source bin/activate && cd octopus && python machine.py", function(err, stdout, stderr) {
+                console.log(stdout)
+            })
+        }
+        
+    })
 })
 
 

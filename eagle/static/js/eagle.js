@@ -7,7 +7,7 @@ var platform = {
     'zfxindai': '紫枫信贷',
     'zhaoshangdai': '招商贷',
     'itouzi': '爱投资',
-    'nobank': '诺诺磅客',
+    'nonobank': '诺诺磅客',
     'sidatz': '四达投资',
     'zhongbaodai': '中宝财富',
     'zibenzaixian': '资本在线',
@@ -21,20 +21,52 @@ angular.module('eagle',[])
     return {
         on: function (eventName, callback) {
             socket.on(eventName, function () {  
-                var args = arguments;
+                var args = arguments
                 $rootScope.$apply(function () {
                     callback.apply(this, args)
                 });
             });
+        },
+        emit: function(eventName, data, callback) {
+            socket.emit(eventName, data, function() {
+                var args = arguments
+                $rootScope.$apply(function() {
+                    callback.apply(this, args)
+                })
+            })
         }
     };
 })
+.directive('navContent', function() {
+    return {
+        restrict: 'A',
+        scope: true,
+        replace: true,
+        template: '<a href="#" >{{data.platform[key]}}<span class="badge pull-right">{{value - 1}}</span></a>'
+    }
+})
 .controller('platforms', function($scope, socket) {
-    $scope.item = {}
+    $scope.data = {
+        item : {},
+        platform : platform,
+        application_data: [],
+        is_refresh: false
+    }
+
+    $scope.refresh = function() {
+        $scope.data.application_data = []
+        $scope.data.is_refresh = true
+        socket.emit('task', 'start')
+    }
 
     socket.on('platforms', function(data) {
-        console.log(data)
-        $scope.item = JSON.parse(data)
+        $scope.data.item = JSON.parse(data)
+        $scope.data.is_refresh = false
+    })
+
+    socket.on('application_data', function(data) {
+        $scope.data.application_data.push(JSON.parse(data))
+        $scope.data.is_refresh = false
     })
 
 })
