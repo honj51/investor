@@ -33,7 +33,7 @@
                     </thead>
                     <tbody>
                         <tr ng-repeat="i in data.application_data">
-                            <td ng-bind="platform[i['platform']]"></td>
+                            <td ng-bind="i['platform']"></td>
                             <td ng-bind="i['name']"></td>
                             <td ng-bind="i['apr']"></td>
                             <td ng-bind="i['day']"></td>
@@ -44,7 +44,7 @@
                 </table>
             </div>
             <div class="col-md-3 fixed-bottom">
-                <div class="alert alert-success alert-dismissible" ng-show="data.is_refresh">正在刷新,请稍后...</div>
+                <div class="alert alert-success alert-dismissible" ng-show="data.is_refresh">正在刷新数据,请稍后...</div>
                 <button class="btn btn-primary btn-block " ng-click="refresh()">刷新</button>
             </div>
         </div>

@@ -21,7 +21,7 @@ def crawl():
 if __name__ == '__main__':
     # redis 是否有 starttime ，如果有，不运行，直接获取redis 的 List 和 Hash 数据
 
-    if r.get('starttime') is None or DEBUG:
+    if r.get('starttime') is None or DEBUG is not True:
         r.set('starttime', datetime.now(), ex=300) # 5分钟的生命周期
         r.delete('application_data')
         r.delete('platforms')

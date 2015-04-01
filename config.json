@@ -1,0 +1,18 @@
+{
+    "port": 8870,
+
+
+    "platform": {
+        "wsloan": "温商贷",
+        "wzdai": "温州贷",
+        "zfxindai": "紫枫信贷",
+        "zhaoshangdai": "招商贷",
+        "itouzi": "爱投资",
+        "nonobank": "诺诺磅客",
+        "sidatz": "四达投资",
+        "zhongbaodai": "中宝财富",
+        "zibenzaixian": "资本在线",
+        "yiqihao": "一起好",
+        "yududai": "渝都贷"
+    }
+}

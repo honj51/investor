@@ -1,23 +1,8 @@
 'use strict'
-// var socket = io('http://localhost:8870')
-
-var platform = {
-    'wsloan': '温商贷',
-    'wzdai': '温州贷',
-    'zfxindai': '紫枫信贷',
-    'zhaoshangdai': '招商贷',
-    'itouzi': '爱投资',
-    'nonobank': '诺诺磅客',
-    'sidatz': '四达投资',
-    'zhongbaodai': '中宝财富',
-    'zibenzaixian': '资本在线',
-    'yiqihao': '一起好',
-    'yududai': '渝都贷'
-}
 
 angular.module('eagle',[])
 .factory('socket', function ($rootScope) {
-    var socket = io('http://localhost:8870')
+    var socket = io(document.URL)
     return {
         on: function (eventName, callback) {
             socket.on(eventName, function () {  
@@ -42,13 +27,12 @@ angular.module('eagle',[])
         restrict: 'A',
         scope: true,
         replace: true,
-        template: '<a href="#" >{{data.platform[key]}}<span class="badge pull-right">{{value - 1}}</span></a>'
+        template: '<a href="#" >{{key}}<span class="badge pull-right">{{value - 1}}</span></a>'
     }
 })
 .controller('platforms', function($scope, socket) {
     $scope.data = {
         item : {},
-        platform : platform,
         application_data: [],
         is_refresh: false
     }
@@ -60,12 +44,12 @@ angular.module('eagle',[])
     }
 
     socket.on('platforms', function(data) {
-        $scope.data.item = JSON.parse(data)
+        $scope.data.item = data
         $scope.data.is_refresh = false
     })
 
     socket.on('application_data', function(data) {
-        $scope.data.application_data.push(JSON.parse(data))
+        $scope.data.application_data.push(data)
         $scope.data.is_refresh = false
     })
 
