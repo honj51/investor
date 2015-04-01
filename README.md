@@ -40,3 +40,7 @@
 
     sudo yum install libxml2-devel libxslt-devel
 
+**如果遇到crypto与openssl不兼容问题，降级cryptography试试**
+
+    pip uninstall cryptography
+    pip install cryptography==0.7.2

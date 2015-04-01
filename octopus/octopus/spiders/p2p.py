@@ -3,9 +3,15 @@ import scrapy
 import json
 import redis
 
+
+
 from octopus.items import Item
 
-r = redis.StrictRedis(host='localhost')
+import kaptan
+config = kaptan.Kaptan(handler='json')
+config.import_config('../config.json')
+
+r = redis.StrictRedis(host=config.get('redis_host', 'localhost'), port=config.get('redis_port', 6379), db=config.get('redis_db', 7) )
 
 def out(item):
         data = {'platform': item['platform'], 'name': item['name'], 'apr': item['apr'], 'day': item['day'], 'progress': item['progress']}

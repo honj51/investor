@@ -1,6 +1,9 @@
 {
     "port": 8870,
 
+    "redis_host": "localhost",
+    "redis_db": 7,
+    "redis_port": 6379,
 
     "platform": {
         "wsloan": "温商贷",

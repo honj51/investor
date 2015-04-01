@@ -5,15 +5,24 @@ var express = require('express'),
     server = require('http').Server(app),
     io = require('socket.io')(server),
     nconf = require('nconf'),
-    redis = require('redis').createClient(),
+    redis = require('redis'),
     exec = require('child_process').exec
 
-
 nconf.file(__dirname + '/../config.json')
-nconf.set('port', nconf.get('port') || 8870)
+
+var redis_host = nconf.get('redis_host') || 'localhost',
+    redis_port = nconf.get('redis_port') || 6379,
+    redis_db = nconf.get('redis_db') || 7
 
 
-server.listen(nconf.get('port'))
+redis = redis.createClient(redis_port, redis_host)
+redis.select(redis_db, function (err) {
+    if(err) {
+        console.log('数据库选择出错:', err)        
+    }
+})
+
+server.listen(nconf.get('port') || 8870)
 
 
 
