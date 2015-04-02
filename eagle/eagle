@@ -1,0 +1,71 @@
+#!/bin/bash
+
+node="$(which node 2>/dev/null)";
+
+if [ $? -gt 0 ];
+    then
+        echo "无法运行node命令";
+        exit 1;
+fi
+
+function is_pid_Exists() {
+    if [ -e "pidfile"];
+        then
+            if ps -p $(cat pidfile) > /dev/null;
+                then
+                    return 1; 
+                else
+                    rm ./pidfile;
+                    return 0;
+            fi
+        else
+            return 0;
+    fi
+}
+
+case "$1" in
+    start)
+        echo "正在启动 Eagle 系统";
+
+        "$node" loader "$@"
+        ;;
+
+    stop)
+        is_pid_Exists;
+        if [ 0 -eq $? ];
+            then
+                echo "Eagle 没有在运行";
+            else
+                echo "Eagle已经成功关闭";
+                kill $(cat pidfile)
+        fi
+        ;;
+
+    restart)
+        is_pid_Exists;
+        if [ 0 -eq $? ];
+            then 
+                echo "目前Eagle没有在运行,如想启动系统，运行:\" ./eagle start \" ";
+            else
+                echo "正在重新启动 Eagle 系统";
+                kill -1 $(cat pidfile);  # 发起 SIGHUP 信号
+        fi
+        ;;
+
+    log)
+        if [ -e ./output.log ];
+            then
+                clear;
+                tail -f ./output.log;
+            else
+                echo "没有日志文件";
+                exit 1
+        fi
+        ;;
+
+    *)
+        echo "用法 $0 {start|stop|reslog}";
+        echo '';
+        exit 1;
+        ;;
+esac
