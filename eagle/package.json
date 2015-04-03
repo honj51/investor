@@ -11,7 +11,7 @@
     "redis": "^0.12.1",
     "express": "^4.12.3",
     "nconf": "~0.7.1",
-    "logrotate-stream": "~0.2.4"
+    "forever-monitor": "~1.5.2"
   },
   "author": "timest",
   "license": "ISC"

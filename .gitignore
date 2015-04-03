@@ -4,7 +4,7 @@ include/
 lib/
 node_modules/
 bower_components/
-
+eagle/logs/
 
 pip-selfcheck.json
 .Python
