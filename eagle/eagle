@@ -8,17 +8,25 @@ if [ $? -gt 0 ];
 fi
 
 case "$1" in
-    start)
+    start|restart)
         echo "正在启动 Eagle 系统";
-        FOREVER_ROOT=$(pwd) forever start -o logs/output.log -e logs/error.log -l logs/forever.log app.js
+        FOREVER_ROOT=$(pwd) forever restart -ao logs/output.log -ae logs/error.log -al logs/forever.log app.js  1>/dev/null 2>&1
+        if [ $? -gt 0 ];
+            then 
+                FOREVER_ROOT=$(pwd) forever start -ao logs/output.log -ae logs/error.log -al logs/forever.log app.js 1>/dev/null 2>&1
+        fi
+        echo "Success"
         ;;
 
     stop)
-        FOREVER_ROOT=$(pwd) forever stop app.js 
-        ;;
-
-    restart)
-        FOREVER_ROOT=$(pwd) forever restart app.js
+        # FOREVER_ROOT=$(pwd) forever stop app.js
+        FOREVER_ROOT=$(pwd) forever stop app.js 1>/dev/null 2>&1
+        if [ $? -gt 0 ];
+            then
+                echo "Eagle is already stopped!"
+            else
+                echo "Stopping Eagle. Bye!"
+        fi
         ;;
 
     log)

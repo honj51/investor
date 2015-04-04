@@ -2,9 +2,13 @@
 bin/
 include/
 lib/
-node_modules/
+
+node_modules
 bower_components/
+
 eagle/logs/
+eagle/pids/
+eagle/config.json
 
 pip-selfcheck.json
 .Python
