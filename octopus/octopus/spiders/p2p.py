@@ -11,18 +11,13 @@ import kaptan
 config = kaptan.Kaptan(handler='json')
 config.import_config('../config.json')
 
+p2p = kaptan.Kaptan(handler='json')
+p2p.import_config('./p2p.json')
+
+
 r = redis.StrictRedis(host=config.get('redis_host', 'localhost'), port=config.get('redis_port', 6379), db=config.get('redis_db', 7) )
 
-def out(item):
-        data = {'platform': item['platform'], 'name': item['name'], 'apr': item['apr'], 'day': item['day'], 'progress': item['progress']}
-        # print json.dumps(data)
-        r.lpush('application_data', json.dumps(data))
-        # print u'---------%s------' % item['platform']
-        # print u'标题: %s' % item['name']
-        # print u'年利率: %s' % item['apr']
-        # print u'期限: %s' % item['day']
-        # print u'进度: %s' % item['progress']
-        # print 
+
 
 """
 1、wsloan 温商贷
@@ -40,6 +35,75 @@ def out(item):
 13、
 """
 
+def out(item):
+        data = {'platform': item['platform'], 'name': item['name'], 'apr': item['apr'], 'day': item['day'], 'progress': item['progress']}
+        # print json.dumps(data)
+        r.lpush('application_data', json.dumps(data))
+
+        # print u'---------%s------' % item['platform']
+        # print u'标题: %s' % item['name']
+        # print u'年利率: %s' % item['apr']
+        # print u'期限: %s' % item['day']
+        # print u'进度: %s' % item['progress']
+        # print 
+
+class P2PSpider(scrapy.Spider):
+    def __init__(self):
+        self.data = p2p.get(self.name)
+        self.start_urls = self.data['start_urls']
+
+    def parse(self, res):
+        r.hset('platforms', self.name, 1)
+        nodes = self.data['nodes']
+        for node in nodes:
+            have_title = node['have_title'] or 0
+            for i in res.xpath(node['root']):
+                if have_title: 
+                    have_title = 0
+                    continue
+                item = Item(
+                    name = self.format_name(i.xpath(node['name']).extract()[0].strip()),
+                    apr = self.format_apr(i.xpath(node['apr']).extract()[0].strip()),
+                    day = self.format_day(i.xpath(node['day']).extract()[0].strip()),
+                    progress = self.format_progress(i.xpath(node['progress']).extract()[0].strip()),
+                    platform = self.name
+                )
+                r.hincrby('platforms', self.name)
+                out(item)
+
+    def format_name(self, name):
+        return name
+
+    def format_apr(self, apr):
+        return apr
+
+    def format_day(self, day):
+        return day
+
+    def format_progress(self, progress):
+        return progress
+
+class Wzdai(P2PSpider):
+    name = 'wzdai'
+
+
+class Zfxindai(P2PSpider):
+    name = 'zfxindai'
+
+class Zhaoshangdai(P2PSpider):
+
+    name = 'zhaoshangdai'
+class Sidatz(P2PSpider):
+
+    name = 'sidatz'
+
+class Zibenzaixian(P2PSpider):
+    name = 'zibenzaixian'
+
+class Yududai(P2PSpider):
+
+    name = 'yududai'
+
 class Wsloan(scrapy.Spider):
     c_name = u'温商贷'
     name = 'wsloan'
@@ -50,7 +114,7 @@ class Wsloan(scrapy.Spider):
 
     def parse(self, res):
         #转贷宝
-        r.hset('platforms', self.name, 1)
+
         node1 = res.xpath('/html/body/div[9]/div/div[2]/div[2]/div/ul') 
         for i in node1:
             item = Item(
@@ -60,7 +124,7 @@ class Wsloan(scrapy.Spider):
                 progress = i.xpath('li[5]/font/text()').extract()[0].strip(),
                 platform = self.name
             )
-            r.hincrby('platforms', self.name)
+            
             out(item)
 
         #温商宝
@@ -73,120 +137,10 @@ class Wsloan(scrapy.Spider):
                 progress = i.xpath('li[5]/font/text()').extract()[0].strip(),
                 platform = self.name
             )
-            r.hincrby('platforms', self.name)
+
             out(item)
 
-class Wzdai(scrapy.Spider):
-    c_name = u'温州贷'
-    name = 'wzdai'
 
-    start_urls = ('https://www.wzdai.com', )
-
-    def parse(self, res):
-        #短期宝
-        r.hset('platforms', self.name, 1)
-        node1 = res.xpath('/html/body/div[4]/div/div[1]/div[1]/ul')
-        for i in node1:
-            item = Item(
-                name = i.xpath('p/a/text()').extract()[0].strip(),
-                apr = i.xpath('string(li/span[3]/font)').extract()[0].strip(),
-                day = i.xpath('string(li/span[2]/font)').extract()[0].strip(),
-                progress = i.xpath('string(li/span[4]/div/font)').extract()[0].strip(),
-                platform = self.name
-            )
-            r.hincrby('platforms', self.name)
-            out(item)
-
-        #股盈宝专区
-        node2 = res.xpath('/html/body/div[4]/div/div[1]/div[2]/ul')
-        for i in node2:
-            item = Item(
-                name = i.xpath('p/a/text()').extract()[0].strip(),
-                apr = i.xpath('string(li/span[3]/font)').extract()[0].strip(),
-                day = i.xpath('string(li/span[2]/font)').extract()[0].strip(),
-                progress = i.xpath('string(li/span[4]/div/font)').extract()[0].strip(),
-                platform = self.name
-            )
-            r.hincrby('platforms', self.name)
-            out(item)
-
-        #车宝宝
-        node3 = res.xpath('/html/body/div[4]/div/div[1]/div[3]/ul')
-        for i in node3:
-            item = Item(
-                name = i.xpath('p/a/text()').extract()[0].strip(),
-                apr = i.xpath('string(li/span[3]/font)').extract()[0].strip(),
-                day = i.xpath('string(li/span[2]/font)').extract()[0].strip(),
-                progress = i.xpath('string(li/span[4]/div/font)').extract()[0].strip(),
-                platform = self.name
-            )
-            r.hincrby('platforms', self.name)
-            out(item)
-
-        #借款标列表
-        node4 = res.xpath('/html/body/div[4]/div/div[1]/div[4]/ul')
-        for i in node4:
-            item = Item(
-                name = i.xpath('p/a/text()').extract()[0].strip(),
-                apr = i.xpath('string(li/span[3]/font)').extract()[0].strip(),
-                day = i.xpath('string(li/span[2]/font)').extract()[0].strip(),
-                progress = i.xpath('string(li/span[4]/div/font)').extract()[0].strip(),
-                platform = self.name
-            )
-            r.hincrby('platforms', self.name)
-            out(item)
-
-class Zfxindai(scrapy.Spider):
-    c_name = u'紫枫信贷'
-
-    name = 'zfxindai'
-
-    start_urls = ('http://www.zfxindai.cn', )
-
-    def parse(self, res):
-        r.hset('platforms', self.name, 1)
-        node = res.xpath('/html/body/div[6]/div[2]/div[1]/div[1]/div[2]/div[2]/div[3]/ul/li')
-        menu = 1
-        for i in node:
-            if menu: 
-                menu = 0
-                continue
-            item = Item(
-                name = i.xpath('span[1]/a/text()').extract()[0].strip(),
-                apr = i.xpath('string(span[3])').extract()[0].strip(),
-                day = i.xpath('string(span[4])').extract()[0].strip(),
-                progress = i.xpath('span[5]/span[2]/text()').extract()[0].strip(),
-                platform = self.name
-            )
-
-            r.hincrby('platforms', self.name)
-            out(item)
-
-class Zhaoshangdai(scrapy.Spider):
-    c_name = u'招商贷'
-
-    name = 'zhaoshangdai'
-
-    start_urls = ('http://www.zhaoshangdai.com/', )
-
-    def parse(self, res):
-        r.hset('platforms', self.name, 1)
-        node = res.xpath('/html/body/div[3]/div[1]/div[1]/div[1]/div[2]/div')
-        menu = 1
-        for i in node:
-            if menu: 
-                menu = 0
-                continue
-            item = Item(
-                name = i.xpath('ul/li[2]/span/a/text()').extract()[0].strip(),
-                apr = i.xpath('ul/li[4]/text()').extract()[0].strip(),
-                day = i.xpath('string(ul/li[5])').extract()[0].strip(),
-                progress = i.xpath('ul/li[7]/div[3]/text()').extract()[0].strip(),
-                platform = self.name
-            )
-
-            r.hincrby('platforms', self.name)
-            out(item)
 
 class Itouzi(scrapy.Spider):
     """ 通过 GET ，获取标的JSON格式数据 """
@@ -236,31 +190,6 @@ class Nonobank(scrapy.Spider):
             out(item)
 
 
-class Sidatz(scrapy.Spider):
-    c_name = u'四达投资'
-    name = 'sidatz'
-
-    start_urls = ('https://www.sidatz.com/', )
-
-    def parse(self, res):
-        #转贷宝
-        r.hset('platforms', self.name, 1)
-        node = res.xpath('//*[@id="aspnetForm"]/section/div[6]/table[2]/tr')
-        menu = 0
-        for i in node:
-            if menu == 0 : 
-                menu  = 1 
-                continue
-            item = Item(
-                name = i.xpath('td[1]/a/text()').extract()[0].strip(),
-                day = i.xpath('td[4]/text()').extract()[0].strip(),
-                apr = i.xpath('td[5]/b/text()').extract()[0].strip(),
-                progress = i.xpath('string(td[6]/span)').extract()[0].strip(),
-                platform = self.name
-            )
-            r.hincrby('platforms', self.name)
-            out(item)
-
 class Zhongbaodai(scrapy.Spider):
     c_name = u'中宝贷'
     name = 'zhongbaodai'
@@ -285,25 +214,8 @@ class Zhongbaodai(scrapy.Spider):
             r.hincrby('platforms', self.name)
             out(item)
         
-class Zibenzaixian(scrapy.Spider):
-    c_name = u'资本在线'
-    name = 'zibenzaixian'
 
-    start_urls = ('http://www.zibenzaixian.com/jd/want_invest/forwardInvest/borrowing.jd', )
 
-    def parse(self, res):
-        r.hset('platforms', self.name, 1)
-        node = res.xpath('//*[@id="Tab3"]/div/div[1]/table/tbody')
-        for i in node:
-            item = Item(
-                name = i.xpath('tr/td[1]/div/a/span[1]/text()').extract()[0],
-                apr = i.xpath('tr/td[4]/text()').extract()[0].strip(),
-                day = i.xpath('tr/td[6]/text()').extract()[0].strip(),
-                progress = i.xpath('tr/td[7]/span/i[1]/text()').extract()[0].strip(),
-                platform = self.name
-            )
-            r.hincrby('platforms', self.name)
-            out(item)
 
 class Yiqihao(scrapy.Spider):
     c_name = u'一起好'
@@ -328,24 +240,3 @@ class Yiqihao(scrapy.Spider):
             r.hincrby('platforms', self.name)
             out(item)
 
-class Yududai(scrapy.Spider):
-    c_name = u'渝都贷'
-    name = 'yududai'
-
-    start_urls = ('http://www.yududai.com/invest/index.html', )
-
-
-    def parse(self, res):
-        r.hset('platforms', self.name, 1)
-        node = res.xpath('//div[re:test(@class, "invest-box-list")]')
-
-        for i in node:
-            item = Item(
-                name = i.xpath('ul/li/span[1]/a[1]/text()').extract()[0].strip(),
-                apr = i.xpath('ul/li/span[3]/text()').extract()[0].strip(),
-                day = u'%s个月' % (i.xpath('string(ul/li/span[4]/strong)').extract()[0]),
-                progress = i.xpath('ul/li/span[6]/b/text()').extract()[0].strip(),
-                platform = self.name
-            )
-            r.hincrby('platforms', self.name)
-            out(item)

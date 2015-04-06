@@ -1,0 +1,110 @@
+{
+    "wzdai": {
+        "c_name" : "温州贷",
+        "start_urls": ["https://www.wzdai.com"],
+        "nodes": [
+            {
+                "root": "/html/body/div[4]/div/div[1]/div[1]/ul",
+                "have_title": 0,
+                "name": "p/a/text()",
+                "apr": "string(li/span[3]/font)",
+                "day": "string(li/span[2]/font)",
+                "progress": "string(li/span[4]/div/font)"
+            }, 
+            {
+                "root": "/html/body/div[4]/div/div[1]/div[2]/ul",
+                "have_title": 0,
+                "name": "p/a/text()",
+                "apr": "string(li/span[3]/font)",
+                "day": "string(li/span[2]/font)",
+                "progress": "string(li/span[4]/div/font)"
+            },
+            {
+                "root": "/html/body/div[4]/div/div[1]/div[3]/ul",
+                "have_title": 0,
+                "name": "p/a/text()",
+                "apr": "string(li/span[3]/font)",
+                "day": "string(li/span[2]/font)",
+                "progress": "string(li/span[4]/div/font)"
+            },
+            {
+                "root": "/html/body/div[4]/div/div[1]/div[4]/ul",
+                "have_title": 0,
+                "name": "p/a/text()",
+                "apr": "string(li/span[3]/font)",
+                "day": "string(li/span[2]/font)",
+                "progress": "string(li/span[4]/div/font)"
+            }
+        ]
+    },
+    "zfxindai": {
+        "c_name": "紫枫信贷",
+        "start_urls": ["http://www.zfxindai.cn"],
+        "nodes": [
+            {
+                "root": "/html/body/div[6]/div[2]/div[1]/div[1]/div[2]/div[2]/div[3]/ul/li",
+                "have_title": 1,
+                "name": "span[1]/a/text()",
+                "apr": "string(span[3])",
+                "day": "string(span[4])",
+                "progress": "span[5]/span[2]/text()"
+            }
+        ]
+    },
+    "zhaoshangdai": {
+        "c_name": "招商贷",
+        "start_urls": ["http://www.zhaoshangdai.com"],
+        "nodes": [
+            {
+                "root": "/html/body/div[3]/div[1]/div[1]/div[1]/div[2]/div",
+                "have_title": 1,
+                "name": "ul/li[2]/span/a/text()",
+                "apr": "ul/li[4]/text()",
+                "day": "string(ul/li[5])",
+                "progress": "ul/li[7]/div[3]/text()"
+            }
+        ]
+    },
+    "sidatz": {
+        "c_name": "四达投资",
+        "start_urls": ["https://www.sidatz.com"],
+        "nodes": [
+            {
+                "root": "//*[@id=\"aspnetForm\"]/section/div[6]/table[2]/tr",
+                "have_title": 1,
+                "name": "td[1]/a/text()",
+                "apr": "td[5]/b/text()",
+                "day": "td[4]/text()",
+                "progress": "string(td[6]/span)"
+            }
+        ]
+    },
+    "zibenzaixian": {
+        "c_name": "资本在线",
+        "start_urls": ["http://www.zibenzaixian.com/jd/want_invest/forwardInvest/borrowing.jd"],
+        "nodes": [
+            {
+                "root": "//*[@id=\"Tab3\"]/div/div[1]/table/tbody",
+                "have_title": 0,
+                "name": "tr/td[1]/div/a/span[1]/text()",
+                "apr": "tr/td[4]/text()",
+                "day": "tr/td[6]/text()",
+                "progress": "tr/td[7]/span/i[1]/text()"
+            }
+        ]
+    },
+    "yududai": {
+        "c_name": "渝都贷",
+        "start_urls": ["http://www.yududai.com/invest/index.html"],
+        "nodes": [
+            {
+                "root": "//div[re:test(@class, \"invest-box-list\")]",
+                "have_title": 0,
+                "name": "ul/li/span[1]/a[1]/text()",
+                "apr": "ul/li/span[3]/text()",
+                "day": "string(ul/li/span[4]/strong)",
+                "progress": "ul/li/span[6]/b/text()"
+            }
+        ]
+    }
+}
